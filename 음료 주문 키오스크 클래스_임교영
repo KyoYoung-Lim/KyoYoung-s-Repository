@@ -1,0 +1,120 @@
+class Kiosk:
+    def __init__(self):
+        # 메뉴와 가격 리스트 초기화
+        self.menu = ['americano', 'latte', 'mocha', 'yuza_tea', 'green_tea', 'choco_latte']
+        self.price = [2000, 3000, 3000, 2500, 2500, 3000]
+
+        # 주문 리스트, 가격 리스트, 총 금액 초기화
+        self.order_menu = []
+        self.order_price = []
+        self.price_sum = 0
+
+        print("어서오세요! Kiosk 주문을 시작합니다.\n")
+        self.menu_print() # 메뉴판 출력
+
+        self.menu_select() # 주문 프로세스 시작
+
+    def menu_print(self):
+        """
+        메뉴판을 출력합니다.
+        메뉴의 개수만큼 반복해서 메뉴와 가격을 일련번호와 함께 출력합니다.
+        """
+        print("--- 메뉴판 ---")
+        for i in range(len(self.menu)):
+            # f-string을 활용하여 메뉴 번호 (i+1), 메뉴 이름, 가격을 깔끔하게 출력
+            print(f"{i+1}. {self.menu[i]} : {self.price[i]}원")                 # (◀ Question 이부분 질문하고 싶음.)
+        print("--------------")
+
+    def menu_select(self):
+        """
+        사용자로부터 음료를 선택받고, 온도 확인 및 추가 주문을 처리합니다.
+        """
+        # 첫 번째 주문 받기
+        n = 0
+        while True: # 올바른 음료 번호가 입력될 때까지 반복
+            try:
+                n = int(input("음료 번호를 입력하세요 : "))
+                # 입력된 번호가 메뉴의 유효 범위 (1부터 메뉴 개수까지) 안에 있는지 확인
+                if 1 <= n <= len(self.menu):                                    # (◀ Question 이부분 질문하고 싶음.)
+                    break # 유효한 입력이면 루프 탈출
+                else:
+                    print("없는 메뉴입니다. 다시 주문해 주세요.")
+            except ValueError: # 숫자가 아닌 다른 문자를 입력했을 때
+                print("올바른 숫자를 입력해주세요.\n")
+
+        # 음료 온도 물어보기 (HOT/ICE 선택)
+        current_temp = "" # 현재 선택된 음료의 온도를 저장할 변수
+        while True: # 1 또는 2가 입력될 때까지 반복
+            try:
+                t = int(input("HOT 음료는 1을, ICE 음료는 2를 입력하세요 : "))
+                if t == 1:
+                    current_temp = "HOT"
+                    print("HOT 음료를 선택하셨습니다.")
+                    break
+                elif t == 2:
+                    current_temp = "ICE"
+                    print("ICE 음료를 선택하셨습니다.")
+                    break
+                else:
+                    print("1과 2 중 하나를 입력하세요.\n")
+            except ValueError:
+                print("올바른 숫자를 입력해주세요.\n")
+
+        # 첫 번째 주문 내역을 주문 리스트와 가격 리스트에 추가하고 총 합계 업데이트
+        self.order_menu.append(current_temp + ' ' + self.menu[n-1])             # (◀ Question 이부분 질문하고 싶음.)
+        self.order_price.append(self.price[n-1])                                # (◀ Question 이부분 질문하고 싶음.)
+        self.price_sum += self.price[n-1]                                       # (◀ Question 이부분 질문하고 싶음.)
+
+        # 선택된 첫 음료의 정보와 현재 합계를 출력
+        print(f"{current_temp} {self.menu[n-1]} : {self.price[n-1]}원")         # (◀ Question 이부분 질문하고 싶음.)
+        print(f"현재 합계 : {self.price_sum}원\n")
+
+        # 추가 주문 또는 지불 선택 (지불 선택 시 0 입력)
+        new_additional_order = -1 # 루프를 시작하기 위한 초기값 (0이 아닌 아무 값)
+        while new_additional_order != 0: # 0이 입력될 때까지 반복 (지불 선택 시 종료)
+            print() # 가독성을 위한 줄 바꿈
+            try:
+                new_additional_order = int(input("추가 주문은 음료 번호를, 지불은 0을 누르세요 : "))
+
+                # 추가 주문이 유효한 메뉴 번호인 경우 (0보다 크고 메뉴 개수 이하)
+                if 0 < new_additional_order <= len(self.menu):                  # (◀ Question 이부분 질문하고 싶음.)
+                    # 추가 음료 온도 물어보기 (첫 주문과 동일한 로직 반복)
+                    t_additional = 0
+                    current_temp_additional = ""
+                    while True:
+                        try:
+                            t_additional = int(input("HOT 음료는 1을, ICE 음료는 2를 입력하세요 : "))
+                            if t_additional == 1:
+                                current_temp_additional = "HOT"
+                                print("HOT 음료 추가")
+                                break
+                            elif t_additional == 2:
+                                current_temp_additional = "ICE"
+                                print("ICE 음료 추가")
+                                break
+                            else:
+                                print("1과 2 중 하나를 입력하세요.\n")
+                        except ValueError:
+                            print("올바른 숫자를 입력해주세요.\n")
+
+                    # 추가된 음료 정보 업데이트
+                    self.order_menu.append(current_temp_additional + ' ' + self.menu[new_additional_order-1])
+                    self.order_price.append(self.price[new_additional_order-1])
+                    self.price_sum += self.price[new_additional_order-1] # 합계 누적      (복합대입 연산자 활용!)
+
+                    # 추가 주문 음료 및 현재 합계 출력
+                    print(f'추가 주문 음료 {current_temp_additional} {self.menu[new_additional_order-1]} : {self.price[new_additional_order-1]}원')
+                    print(f'합계 : {self.price_sum}원')
+
+                elif new_additional_order == 0: # 지불 (0)을 선택한 경우
+                    print("\n--- 주문이 완료되었습니다 ---")
+                    print("주문 내역:", self.order_menu)
+                    print("각 메뉴 가격:", self.order_price)
+                    print(f"총 지불 금액: {self.price_sum}원")
+                    print("이용해주셔서 감사합니다.")
+                    break # 추가 주문 루프 종료
+
+                else: # 없는 번호 (0보다 작거나 메뉴 개수보다 큰)를 입력한 경우
+                    print("없는 메뉴입니다. 다시 주문해 주세요.")
+            except ValueError: # 추가 주문 번호 입력 시 숫자가 아닌 문자를 입력했을 때
+                print("올바른 숫자를 입력해주세요.\n")
